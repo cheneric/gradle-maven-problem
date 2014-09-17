@@ -1,0 +1,134 @@
+import org.apache.ivy.core.module.descriptor.Artifact
+import proguard.gradle.ProGuardTask
+
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath 'net.sf.proguard:proguard-gradle:4.11'
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'distribution'
+
+archivesBaseName = 'gradle-example'
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+final File javaRuntimeJarFile = file('/System/Library/Frameworks/JavaVM.framework/Classes/classes.jar')
+
+group 'example'
+version = '1.0.0-SNAPSHOT'
+
+sourceSets {
+	lower {
+		java {
+			srcDir 'src/lower/java'
+		}
+	}
+	upper {
+		java {
+			srcDir 'src/upper/java'
+		}
+	}
+	configure([lower, upper]) {
+		java {
+			final Set<File> mainSrcDirs = main.java.srcDirs
+			srcDirs mainSrcDirs.toArray(new File[mainSrcDirs.size()])
+		}
+	}
+}
+
+compileLowerJava {
+}
+
+compileUpperJava {
+}
+
+task compileJava(overwrite: true) {
+	dependsOn compileLowerJava,
+		compileUpperJava
+}
+
+final String lowerAppendix = 'lower'
+final String upperAppendix = 'upper'
+task jarLower(type: Jar) {
+	appendix lowerAppendix
+	ext.jarSourceSet = sourceSets.lower
+}
+
+task jarUpper(type: Jar) {
+	appendix upperAppendix
+	ext.jarSourceSet = sourceSets.upper
+}
+
+final String debugClassifier = 'debug'
+configure(tasks.withType(Jar) - jar) {
+	classifier = debugClassifier
+	from jarSourceSet.output
+}
+
+task jar(overwrite: true) {
+	final TaskCollection<Jar> jarSubtasks = tasks.withType(Jar)
+	dependsOn jarSubtasks
+	jarSubtasks.each { final Jar jarSubtask ->
+		outputs.files jarSubtask.outputs.files.collect({ it })
+	}
+}
+
+task proguardLower(type: ProGuardTask) {
+	ext.jarTask = jarLower
+}
+
+task proguardUpper(type: ProGuardTask) {
+	ext.jarTask = jarUpper
+}
+
+configure(tasks.withType(ProGuardTask)) {
+	dependsOn jarTask
+	final File outputDirectory = new File(buildDir, 'proguard')
+	injars jarTask.archivePath
+	keep 'public class ** { public *; }'
+	libraryjars files(configurations.compile,
+		javaRuntimeJarFile)
+	outjars new File(outputDirectory, "${jarTask.archiveName.replace('-debug.jar', '.jar')}")
+	doFirst {
+		outputDirectory.mkdirs()
+	}
+}
+
+task proguard {
+	final TaskCollection<ProGuardTask> proguardSubtasks = tasks.withType(ProGuardTask)
+	dependsOn proguardSubtasks
+	proguardSubtasks.each { final ProGuardTask proguardSubtask ->
+		outputs.files proguardSubtask.outputs.files.collect({ it })
+	}
+}
+
+artifacts {
+	// remove (original) jar artifact added by Java plugin
+	configurations.archives.artifacts.clear()
+	[jar, proguard].each { final Task task ->
+		task.outputs.files.each { final File outputFile ->
+			archives(outputFile) {
+				builtBy task
+			}
+		}
+	}
+}
+
+uploadArchives {
+	dependsOn install
+}
+
+configure([install.repositories.mavenInstaller/*, uploadArchives.repositories.mavenDeployer*/]) {
+	[lowerAppendix, upperAppendix].each { final String appendix ->
+		[null, debugClassifier].each { final String classifier ->
+			addFilter("""${appendix}${classifier == null ? '' : "-${classifier}"}""" ) { final Artifact artifact, final File file ->
+				artifact.name.contains(appendix) && artifact.getExtraAttribute('classifier') == classifier
+			}
+		}
+	}
+}
