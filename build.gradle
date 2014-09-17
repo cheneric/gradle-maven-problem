@@ -41,12 +41,6 @@ sourceSets {
 	}
 }
 
-compileLowerJava {
-}
-
-compileUpperJava {
-}
-
 task compileJava(overwrite: true) {
 	dependsOn compileLowerJava,
 		compileUpperJava
