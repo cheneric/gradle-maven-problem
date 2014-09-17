@@ -16,23 +16,23 @@ This project illustrates non-deterministic behavior by the Gradle (v1.12) `insta
 0. Other times, 5 artifacts are installed:
     0. This can be because one artifact is installed twice (innocuous):
 
-    <pre>
+        <pre>
 [INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/libs/gradle-example-lower-1.0.0-SNAPSHOT-debug.jar to /Users/echen/.m2/repository/example/gradle-example-lower/1.0.0-SNAPSHOT/gradle-example-lower-1.0.0-SNAPSHOT-debug.jar
 <b>[INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/proguard/gradle-example-upper-1.0.0-SNAPSHOT.jar to /Users/echen/.m2/repository/example/gradle-example-upper/1.0.0-SNAPSHOT/gradle-example-upper-1.0.0-SNAPSHOT.jar</b>
 <b>[INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/proguard/gradle-example-upper-1.0.0-SNAPSHOT.jar to /Users/echen/.m2/repository/example/gradle-example-upper/1.0.0-SNAPSHOT/gradle-example-upper-1.0.0-SNAPSHOT.jar</b>
 [INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/libs/gradle-example-upper-1.0.0-SNAPSHOT-debug.jar to /Users/echen/.m2/repository/example/gradle-example-upper/1.0.0-SNAPSHOT/gradle-example-upper-1.0.0-SNAPSHOT-debug.jar
 [INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/proguard/gradle-example-lower-1.0.0-SNAPSHOT.jar to /Users/echen/.m2/repository/example/gradle-example-lower/1.0.0-SNAPSHOT/gradle-example-lower-1.0.0-SNAPSHOT.jar
-    </pre>
+        </pre>
 
     0. Or because one artifact is **incorrectly** installed over the correct one:
 
-    <pre>
+        <pre>
 [INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/libs/gradle-example-lower-1.0.0-SNAPSHOT-debug.jar to /Users/echen/.m2/repository/example/gradle-example-lower/1.0.0-SNAPSHOT/gradle-example-lower-1.0.0-SNAPSHOT-debug.jar
 <b>[INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/proguard/gradle-example-lower-1.0.0-SNAPSHOT.jar to /Users/echen/.m2/repository/example/gradle-example-lower/1.0.0-SNAPSHOT/gradle-example-lower-1.0.0-SNAPSHOT.jar</b>
 <b>[INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/proguard/gradle-example-<i>lower</i>-1.0.0-SNAPSHOT.jar to /Users/echen/.m2/repository/example/gradle-example-upper/1.0.0-SNAPSHOT/gradle-example-<i>upper</i>-1.0.0-SNAPSHOT.jar</b>
 [INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/libs/gradle-example-upper-1.0.0-SNAPSHOT-debug.jar to /Users/echen/.m2/repository/example/gradle-example-upper/1.0.0-SNAPSHOT/gradle-example-upper-1.0.0-SNAPSHOT-debug.jar
 [INFO] Installing /Users/echen/data/vungle/code/gradle-example/build/proguard/gradle-example-upper-1.0.0-SNAPSHOT.jar to /Users/echen/.m2/repository/example/gradle-example-upper/1.0.0-SNAPSHOT/gradle-example-upper-1.0.0-SNAPSHOT.jar
-    </pre>
+        </pre>
   
 0. Finally, I have also seen 6 artifacts installed - in this case, 2 duplicates:
 
