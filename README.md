@@ -49,6 +49,8 @@ This project illustrates non-deterministic behavior by the Gradle (v1.12) `insta
 
 The problem seems to lie with installing the Proguard artifacts rather than the `jar` task artifacts (notice that duplication or overwriting install never occurs with the `-debug` artifacts).
 
+However, if you remove the `jar` artifacts (comment out ~~`jar`~~ from `[jar, proguard]`) from the `build.gradle` `artifacts` section, the problem with the duplication and overwriting of Proguard artifacts no longer manifests.
+
 ### Envrionment
 
 * Gradle 1.12 (with Gradle wrapper)
