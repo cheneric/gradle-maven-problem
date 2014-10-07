@@ -46,6 +46,10 @@ task compileJava(overwrite: true) {
 		compileUpperJava
 }
 
+classes {
+	dependsOn = [lowerClasses, upperClasses]
+}
+
 final String lowerAppendix = 'lower'
 final String upperAppendix = 'upper'
 task jarLower(type: Jar) {
