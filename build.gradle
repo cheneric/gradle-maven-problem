@@ -1,3 +1,6 @@
+import org.apache.ivy.core.module.descriptor.Artifact
+import proguard.gradle.ProGuardTask
+
 buildscript {
 	repositories {
 		jcenter()
@@ -6,9 +9,6 @@ buildscript {
 		classpath 'net.sf.proguard:proguard-gradle:4.11'
 	}
 }
-
-import org.apache.ivy.core.module.descriptor.Artifact
-import proguard.gradle.ProGuardTask
 
 apply plugin: 'java'
 apply plugin: 'maven'
