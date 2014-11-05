@@ -1,6 +1,3 @@
-import org.apache.ivy.core.module.descriptor.Artifact
-import proguard.gradle.ProGuardTask
-
 buildscript {
 	repositories {
 		jcenter()
@@ -10,8 +7,12 @@ buildscript {
 	}
 }
 
+import org.apache.ivy.core.module.descriptor.Artifact
+import proguard.gradle.ProGuardTask
+
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'distribution'
 
 archivesBaseName = 'gradle-example'
@@ -105,6 +106,10 @@ task proguard {
 	}
 }
 
+/*
+ * Maven plugin section (broken) - run with:  mvn clean install --info
+ */
+
 artifacts {
 	// remove (original) jar artifact added by Java plugin
 	configurations.archives.artifacts.clear()
@@ -130,3 +135,57 @@ configure([install.repositories.mavenInstaller/*, uploadArchives.repositories.ma
 		}
 	}
 }
+/*
+ * end Maven plugin section
+ */
+
+
+/*
+ * Maven Publish plugin (works) - run with:  mvn clean publishToMavenLocal
+ */
+publishing {
+	publications {
+		lower(MavenPublication) {
+			artifact proguardLower.outputs.files.singleFile
+			artifactId "${archivesBaseName}-lower"
+		}
+		lowerDebug(MavenPublication) {
+			artifact jarLower {
+				classifier 'debug'
+			}
+			artifactId "${archivesBaseName}-lower"
+		}
+		upper(MavenPublication) {
+			artifact proguardUpper.outputs.files.singleFile
+			artifactId "${archivesBaseName}-upper"
+		}
+		upperDebug(MavenPublication) {
+			artifact jarUpper {
+				classifier 'debug'
+			}
+			artifactId "${archivesBaseName}-upper"
+		}
+	}
+}
+
+// Maven Publish plugin tasks are not available during project evaluation
+afterEvaluate {
+	publishLowerDebugPublicationToMavenLocal {
+		dependsOn jarLower
+	}
+	
+	publishLowerPublicationToMavenLocal {
+		dependsOn proguardLower
+	}
+	
+	publishUpperDebugPublicationToMavenLocal {
+		dependsOn jarUpper
+	}
+	
+	publishUpperPublicationToMavenLocal {
+		dependsOn proguardUpper
+	}
+}
+/*
+ * end Maven Publish plugin section
+ */
