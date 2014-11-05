@@ -1,6 +1,17 @@
-# proguard-example
+[MavenPlugin]: http://www.gradle.org/docs/1.12/userguide/maven_plugin.html
+[MavenPublishPlugin]: http://www.gradle.org/docs/1.12/userguide/publishing_maven.html
 
-### Overview
+# [Gradle Maven Plugin][MavenPlugin] install/deploy problem sample project
+
+### tl;dr
+
+This project illustrates a problem I was having with the Gradle 1.12 [Maven Plugin][MavenPlugin] installing extra artifacts (sometimes duplicates, other times incorrect ones) randomly.
+
+The solution, after speaking with [Gary Hale](http://www.gradleware.com/team/gary-hale/) at Gradleware was to use the newer [Maven Publish Plugin][MavenPublishPlugin] instead.  I have included the working solution in the [build script](build.gradle).
+
+There seems to be bug in the older Maven Plugin.
+
+### Problem description
 
 This project illustrates non-deterministic behavior by the Gradle (v1.12) `install` task when installing multiple `jar` and `proguard` artifacts.
 
